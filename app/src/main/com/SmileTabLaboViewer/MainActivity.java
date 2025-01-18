@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -29,7 +30,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-       
+        
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
@@ -37,11 +38,11 @@ public class MainActivity extends Activity {
         
         setContentView(createLayout());
 
-        
+       
         webView = findViewById(R.id.webView);
         initializeWebView();
 
-       
+        
         findViewById(R.id.button_top).setOnClickListener(v -> loadPage("https://wiki3.jp/SmileTabLabo/"));
         findViewById(R.id.button_menu).setOnClickListener(v -> loadPage("https://wiki3.jp/SmileTabLabo/page/2"));
         findViewById(R.id.button_pagelist).setOnClickListener(v -> loadPage("https://wiki3.jp/SmileTabLabo/pageList"));
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
         header.setBackgroundColor(0xFF009688);
         header.setPadding(10, 10, 10, 10);
 
-        // ボタン作成
+   
         Button buttonTop = createButton("トップ", R.id.button_top);
         Button buttonMenu = createButton("メニュー", R.id.button_menu);
         Button buttonPagelist = createButton("一覧", R.id.button_pagelist);
@@ -72,7 +73,7 @@ public class MainActivity extends Activity {
 
         layout.addView(header);
 
-        // WebView追加
+ 
         WebView webView = new WebView(this);
         webView.setId(R.id.webView);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -120,7 +121,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 if (url.contains("https://wiki3.jp/SmileTabLabo/")) {
-                    injectFullCSSAndRemoveAds(view);
+                    injectFullCSSAndRemoveAds(view); 
                 }
             }
 
@@ -128,7 +129,7 @@ public class MainActivity extends Activity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
                 if (isBlockedUrl(url)) {
-                    return true;
+                    return true; 
                 }
                 view.loadUrl(url);
                 return true;
@@ -154,7 +155,7 @@ public class MainActivity extends Activity {
             "document.querySelectorAll('.ad-banner, .ad-box, iframe, [id*=\"ad\"], [class*=\"ad\"]').forEach(e => e.remove());" +
             "document.querySelectorAll('a').forEach(e => e.style.color = '#009688');" +
             "document.querySelectorAll('a[href*=\"SmileTabLabo/page/2\"], a[href*=\"SmileTabLabo/pagelist\"]').forEach(e => e.remove());" +
-            "setInterval(() => {" +
+            "setInterval(() -> {" +
             "    document.querySelectorAll('.ad-banner, .ad-box, iframe, [id*=\"ad\"], [class*=\"ad\"]').forEach(e => e.remove());" +
             "}, 1000);";
 
@@ -184,27 +185,32 @@ public class MainActivity extends Activity {
         webView.setDrawingCacheEnabled(false);
 
         try {
-            // スクリーンショット保存先ディレクトリ（`/sdcard/DCIM/Screenshot/`）
             File screenshotDir = new File("/sdcard/DCIM/Screenshot/");
             if (!screenshotDir.exists()) {
-                screenshotDir.mkdirs(); // Screenshotフォルダを作成
+                screenshotDir.mkdirs();
             }
 
-    
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
             String fileName = timeStamp + ".png";
             File screenshotFile = new File(screenshotDir, fileName);
 
-     
             try (FileOutputStream fos = new FileOutputStream(screenshotFile)) {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
                 fos.flush();
             }
 
-     
             runOnUiThread(() -> Toast.makeText(this, "スクリーンショットを保存しました: " + screenshotFile.getAbsolutePath(), Toast.LENGTH_LONG).show());
         } catch (Exception e) {
             runOnUiThread(() -> Toast.makeText(this, "スクリーンショット保存中にエラー: " + e.getMessage(), Toast.LENGTH_LONG).show());
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
+            webView.goBack();
+            return true; //
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
