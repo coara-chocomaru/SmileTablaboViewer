@@ -30,19 +30,19 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        
+
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
 
-        
+
         setContentView(createLayout());
 
-       
+
         webView = findViewById(R.id.webView);
         initializeWebView();
 
-        
+
         findViewById(R.id.button_top).setOnClickListener(v -> loadPage("https://wiki3.jp/SmileTabLabo/"));
         findViewById(R.id.button_menu).setOnClickListener(v -> loadPage("https://wiki3.jp/SmileTabLabo/page/2"));
         findViewById(R.id.button_pagelist).setOnClickListener(v -> loadPage("https://wiki3.jp/SmileTabLabo/pageList"));
@@ -54,13 +54,13 @@ public class MainActivity extends Activity {
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setBackgroundColor(0xFFF9F9F9);
 
-        // ヘッダー作成
+
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setBackgroundColor(0xFF009688);
         header.setPadding(10, 10, 10, 10);
 
-   
+
         Button buttonTop = createButton("トップ", R.id.button_top);
         Button buttonMenu = createButton("メニュー", R.id.button_menu);
         Button buttonPagelist = createButton("一覧", R.id.button_pagelist);
@@ -73,7 +73,6 @@ public class MainActivity extends Activity {
 
         layout.addView(header);
 
- 
         WebView webView = new WebView(this);
         webView.setId(R.id.webView);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -120,9 +119,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                if (url.contains("https://wiki3.jp/SmileTabLabo/")) {
-                    injectFullCSSAndRemoveAds(view); 
-                }
+                injectFullCSSAndRemoveAds(view);
             }
 
             @Override
@@ -154,9 +151,10 @@ public class MainActivity extends Activity {
             "document.body.style.fontFamily = 'Arial, sans-serif';" +
             "document.querySelectorAll('.ad-banner, .ad-box, iframe, [id*=\"ad\"], [class*=\"ad\"]').forEach(e => e.remove());" +
             "document.querySelectorAll('a').forEach(e => e.style.color = '#009688');" +
-            "document.querySelectorAll('a[href*=\"SmileTabLabo/page/2\"], a[href*=\"SmileTabLabo/pagelist\"]').forEach(e => e.remove());" +
-            "setInterval(() -> {" +
+            "document.querySelectorAll('a[href*=\"SmileTabLabo/page/2\"], a[href*=\"SmileTabLabo/pageList\"]').forEach(e => e.remove());" +
+            "setInterval(() => {" +
             "    document.querySelectorAll('.ad-banner, .ad-box, iframe, [id*=\"ad\"], [class*=\"ad\"]').forEach(e => e.remove());" +
+            "    document.querySelectorAll('a[href*=\"SmileTabLabo/page/2\"], a[href*=\"SmileTabLabo/pageList\"]').forEach(e => e.remove());" +
             "}, 1000);";
 
         view.evaluateJavascript("javascript:(function() {" + fullCssAndJs + "})()", null);
@@ -209,7 +207,7 @@ public class MainActivity extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
             webView.goBack();
-            return true; //
+            return true; 
         }
         return super.onKeyDown(keyCode, event);
     }
